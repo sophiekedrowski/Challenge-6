@@ -19,4 +19,17 @@ fetch(GeocodingApi)
 .then((data) => console.log(data));
 
 
+// var x = document.getElementById("demo");
+
+// function getLocation()
+
+document.getElementById("searchBtn").addEventListener("click", function(){
+var userCityInput = document.getElementById("UserInput").value
+fetch(GeocodingApi)
+var formattedApi = (`http://api.openweathermap.org/geo/1.0/direct?q=${userCityInput}&limit=5&appid=b3a90c7d3eb0ba55e470bab86bc63863`);
+
+
+// console.log(`http://api.openweathermap.org/geo/1.0/direct?q=${userCityInput}&limit=5&appid=b3a90c7d3eb0ba55e470bab86bc63863`);
+
+});
 
