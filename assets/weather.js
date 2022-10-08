@@ -9,27 +9,58 @@
 // THEN I am again presented with current and future conditions for that city
 
 var skAPIkey = "b3a90c7d3eb0ba55e470bab86bc63863";
-var GeocodingApi = "http://api.openweathermap.org/geo/1.0/direct?q=London&limit=5&appid=b3a90c7d3eb0ba55e470bab86bc63863";
+// var GeocodingApi = "http://api.openweathermap.org/geo/1.0/direct?q=London&limit=5&appid=b3a90c7d3eb0ba55e470bab86bc63863";
 var CurrentWeatherApi = "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=b3a90c7d3eb0ba55e470bab86bc63863"
 var FiveDayApi = "api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid=b3a90c7d3eb0ba55e470bab86bc63863"
 
 
-fetch(GeocodingApi)
-.then((response) => response.json())
-.then((data) => console.log(data));
+var weatherAPIkey = "b3a90c7d3eb0ba55e470bab86bc63863";
 
 
-// var x = document.getElementById("demo");
+function searchApi(userInput) {
+  var GeocodingApi = (`http://api.openweathermap.org/geo/1.0/direct?q=${userInput}&limit=5&appid=${weatherAPIkey}`);
+  fetch(GeocodingApi)
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+      var lon = res.city.coord.lon;
+      var lat = res.city.coord.lat;
+      var cityID = res.city.id;
+      console.log("lat: " + lat, "Lon: " + lon);
+      function uvApi() {
+        var uvUrl =
+          "https://api.openweathermap.org/data/2.5/uvi/forecast?lat=" +
+          lat + "&lon=" + lon + "&appid=" + weatherAPIkey + "&cnt=1";
+        fetch(uvUrl)
+          .then((res) => res.json())
+          .then((res) => {
+            console.log(res);
+            var uvIndex = res[0].value;
+            console.log(uvIndex);
+            function forecast() {
+              var forecastUrl =
+                "https://api.openweathermap.org/data/2.5/forecast?id=" +
+                cityID +
+                "&appid=" +
+                weatherAPIkey;
+              fetch(forecastUrl)
+                .then((res) => res.json())
+                .then((res) => {
+                  console.log(res.list.slice(0, 5));
+                });
+            }
+            forecast();
+          });
+      }
+      uvApi();
+    });
+}
+;
+return lat, lon;
 
-// function getLocation()
 
-document.getElementById("searchBtn").addEventListener("click", function(){
-var userCityInput = document.getElementById("UserInput").value
-fetch(GeocodingApi)
-var formattedApi = (`http://api.openweathermap.org/geo/1.0/direct?q=${userCityInput}&limit=5&appid=b3a90c7d3eb0ba55e470bab86bc63863`);
-
-
-// console.log(`http://api.openweathermap.org/geo/1.0/direct?q=${userCityInput}&limit=5&appid=b3a90c7d3eb0ba55e470bab86bc63863`);
-
-});
-
+document.getElementById("searchBtn").addEventListener("click", function () {
+  var userCityInput = document.getElementById("UserInput").value
+  var location = searchApi(userCityInput)
+  console.log(location)
+})
