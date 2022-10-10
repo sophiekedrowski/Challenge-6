@@ -8,59 +8,66 @@
 // WHEN I click on a city in the search history
 // THEN I am again presented with current and future conditions for that city
 
-var skAPIkey = "b3a90c7d3eb0ba55e470bab86bc63863";
-// var GeocodingApi = "http://api.openweathermap.org/geo/1.0/direct?q=London&limit=5&appid=b3a90c7d3eb0ba55e470bab86bc63863";
-var CurrentWeatherApi = "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid=b3a90c7d3eb0ba55e470bab86bc63863"
-var FiveDayApi = "api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid=b3a90c7d3eb0ba55e470bab86bc63863"
-
-
 var weatherAPIkey = "b3a90c7d3eb0ba55e470bab86bc63863";
+
+function forecast(lat, lon) {
+    var forecastUrl =
+        (`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${weatherAPIkey}`);
+    fetch(forecastUrl)
+        .then((res) => res.json())
+        .then((res) => {
+            console.log(res);
+            console.log(res.list.slice(0, 5));
+
+            //Getting the date and converting from UNIX timestamp into correct format
+            var unformattedDate = res.list[0].dt
+            var date = new Date(unformattedDate * 1000);
+            var formattedDate = moment(date).format("DD/MM/YYYY");
+
+            //wind and humidity values
+            var wind = res.list[0].wind.speed + (" MPH")
+            var humidity = res.list[0].main.humidity + (" %")
+
+            //Converting the temp from K to F
+            var temp = res.list[0].main.temp
+            var actualTemp = (temp - 273.15) * 9 / 5 + 32
+            var trueTemp = Math.round(actualTemp) + (" F°")
+
+            //icon
+            var icon = res.list[0].weather[0].icon
+            var iconurl = `http://openweathermap.org/img/w/${icon}.png`
+
+            //Creating an array with all my variables
+            var todaysWeather = [wind, humidity, trueTemp, icon, formattedDate]
+
+
+            //For loops to go through my 5 day forecast
+            for (let i = 0; i < todaysWeather.length; i++) {
+                const accurateDisplayedWeather = todaysWeather[i];
+                console.log(accurateDisplayedWeather)
+            }
+
+        });
+}
 
 
 function searchApi(userInput) {
-  var GeocodingApi = (`http://api.openweathermap.org/geo/1.0/direct?q=${userInput}&limit=5&appid=${weatherAPIkey}`);
-  fetch(GeocodingApi)
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      var lon = res.city.coord.lon;
-      var lat = res.city.coord.lat;
-      var cityID = res.city.id;
-      console.log("lat: " + lat, "Lon: " + lon);
-      function uvApi() {
-        var uvUrl =
-          "https://api.openweathermap.org/data/2.5/uvi/forecast?lat=" +
-          lat + "&lon=" + lon + "&appid=" + weatherAPIkey + "&cnt=1";
-        fetch(uvUrl)
-          .then((res) => res.json())
-          .then((res) => {
+    var GeocodingApi = (`http://api.openweathermap.org/geo/1.0/direct?q=${userInput}&limit=5&appid=${weatherAPIkey}`);
+    fetch(GeocodingApi)
+        .then((res) => res.json())
+        .then((res) => {
             console.log(res);
-            var uvIndex = res[0].value;
-            console.log(uvIndex);
-            function forecast() {
-              var forecastUrl =
-                "https://api.openweathermap.org/data/2.5/forecast?id=" +
-                cityID +
-                "&appid=" +
-                weatherAPIkey;
-              fetch(forecastUrl)
-                .then((res) => res.json())
-                .then((res) => {
-                  console.log(res.list.slice(0, 5));
-                });
-            }
-            forecast();
-          });
-      }
-      uvApi();
-    });
+            var lon = res[0].lon;
+            var lat = res[0].lat;
+            console.log("lat: " + lat, "Lon: " + lon);
+            forecast(lat, lon);
+            return lat, lon;
+        });
 }
-;
-return lat, lon;
 
 
 document.getElementById("searchBtn").addEventListener("click", function () {
-  var userCityInput = document.getElementById("UserInput").value
-  var location = searchApi(userCityInput)
-  console.log(location)
+    var userCityInput = document.getElementById("UserInput").value
+    var location = searchApi(userCityInput)
+    console.log(location)
 })
