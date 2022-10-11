@@ -21,11 +21,8 @@ function forecast(lat, lon, userInput) {
     fetch(forecastUrl)
         .then((res) => res.json())
         .then((res) => {
-            // console.log(res);
-            // console.log(res.list.slice(0, 5));
             //Make error if user types not a real city
-            // console.log(forecastUrl)
-            // console.log(forecastUrl)
+
             function getWeather(day) {
                 //Getting the date and converting from UNIX timestamp into correct format
                 var unformattedDate = res.list[day].dt
@@ -51,7 +48,7 @@ function forecast(lat, lon, userInput) {
                 var city = res.city.name
 
                 //Creating an array with all my variables
-                return {city:city, date:formattedDate, iconurl:iconurl, temp:trueTemp, wind:wind, humidity:humidity};
+                return { city: city, date: formattedDate, iconurl: iconurl, temp: trueTemp, wind: wind, humidity: humidity };
             }
 
             var currentWeather = getWeather(0);
@@ -64,26 +61,16 @@ function forecast(lat, lon, userInput) {
             document.getElementById("current-icon").src = `${currentWeather.iconurl}`
 
 
-
-            // console.log(currentWeather[0]);
-
-            //    console.log(currentWeather)
-
             // For loops to go through my 5 day forecast
             var dayNumber = 1
-
             for (let i = 0; i < res.list.length; i++) {
-                // const accurateDisplayedWeather = todaysWeather[i];
-                // console.log(getWeather(i))
-
                 var dailyWeatherFormmated = getWeather(i);
-
                 if (res.list[i].dt_txt.endsWith("9:00:00")) {
-                    
+
                     var dayDiv = document.getElementById(`day-${dayNumber}`).children
 
                     dayDiv[0].innerHTML = `${dailyWeatherFormmated.date}`
-                    dayDiv[1].src  = dailyWeatherFormmated.iconurl
+                    dayDiv[1].src = dailyWeatherFormmated.iconurl
                     dayDiv[2].innerHTML = `${dailyWeatherFormmated.temp}`
                     dayDiv[3].innerHTML = `${dailyWeatherFormmated.wind}`
                     dayDiv[4].innerHTML = `${dailyWeatherFormmated.humidity}`
@@ -115,12 +102,20 @@ function searchApi(userInput) {
 }
 
 
-document.getElementById("searchBtn").addEventListener("click", function () {
+document.getElementById("searchBtn").addEventListener("click", function (event) {
+    event.preventDefault();
     var userCityInput = document.getElementById("UserInput").value
     var location = searchApi(userCityInput)
-    console.log(location)
+    localStorage.setItem("UserInput", JSON.stringify(userInput));
+    // console.log(location)
 })
 
-// function savingCityData(){
+function GettingStorage() {
+    for (let i = 0; i < userInput.length; i++) {
+        var TextId = userInput[i]; 
+    var locations = JSON.parse(localStorage.getItem(userInput));
+    document.getElementById(savedcities).innerHTML = locations;
+    }
+}
 
-// }
+GettingStorage();

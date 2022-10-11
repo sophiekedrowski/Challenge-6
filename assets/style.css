@@ -1,0 +1,46 @@
+header {
+    text-align: center;
+    display: inline-block;
+    background-color: rgb(150, 194, 219);
+    padding: 30px;
+    width: 100%;
+}
+
+body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#search {
+    list-style: none;
+}
+
+#currentWeather {
+    width: 75%;
+    font-size: 25px;
+    border: solid black 2px;
+    padding-left: 15px;
+    margin-top: 25px;
+    margin-left: 25px;
+}
+
+div h2{
+    padding-right: 10px;
+}
+
+#forecast{
+    display: flex;
+    width: 30%;
+    flex-direction: row;
+    margin-top: 25px;
+}
+
+li {
+    list-style: none;
+    background-color: darkblue;
+    color: aliceblue;
+    padding: 10px;
+    border-left: 10px;
+    border-right: 10px;
+}
