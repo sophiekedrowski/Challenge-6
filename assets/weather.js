@@ -72,7 +72,7 @@ function forecast(lat, lon, userInput) {
 
 
 function searchApi(userInput) {
-    var GeocodingApi = (`http://api.openweathermap.org/geo/1.0/direct?q=${userInput}&limit=5&appid=${weatherAPIkey}`);
+    var GeocodingApi = (`https://api.openweathermap.org/geo/1.0/direct?q=${userInput}&limit=5&appid=${weatherAPIkey}`);
     fetch(GeocodingApi)
         .then((res) => res.json())
         .then((res) => {
