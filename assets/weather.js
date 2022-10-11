@@ -21,60 +21,44 @@ function forecast(lat, lon, userInput) {
     fetch(forecastUrl)
         .then((res) => res.json())
         .then((res) => {
-            //Make error if user types not a real city
-
             function getWeather(day) {
                 //Getting the date and converting from UNIX timestamp into correct format
                 var unformattedDate = res.list[day].dt
-
                 var date = new Date(unformattedDate * 1000);
-                // console.log(res.list[day].dt_txt)
                 var formattedDate = moment(date).format("MM/DD/YYYY");
-
-
                 //wind and humidity values
                 var wind = ("Wind:") + res.list[day].wind.speed + (" MPH")
                 var humidity = ("Humiditiy:") + res.list[day].main.humidity + ("%")
-
                 //Converting the temp from K to F
                 var temp = res.list[day].main.temp
                 var actualTemp = (temp - 273.15) * 9 / 5 + 32
                 var trueTemp = ("Temp:") + Math.round(actualTemp) + (" F°")
-
                 //icon
                 var icon = res.list[day].weather[0].icon
                 var iconurl = `http://openweathermap.org/img/w/${icon}.png`
-
                 var city = res.city.name
-
                 //Creating an array with all my variables
                 return { city: city, date: formattedDate, iconurl: iconurl, temp: trueTemp, wind: wind, humidity: humidity };
             }
 
             var currentWeather = getWeather(0);
-
-
             document.getElementById("city-date").innerHTML = `${currentWeather.city} (${currentWeather.date})`
             document.getElementById("temp").innerHTML = `${currentWeather.temp}`
             document.getElementById("wind").innerHTML = `${currentWeather.wind}`
             document.getElementById("humidity").innerHTML = `${currentWeather.humidity}`
             document.getElementById("current-icon").src = `${currentWeather.iconurl}`
 
-
             // For loops to go through my 5 day forecast
             var dayNumber = 1
             for (let i = 0; i < res.list.length; i++) {
                 var dailyWeatherFormmated = getWeather(i);
                 if (res.list[i].dt_txt.endsWith("9:00:00")) {
-
                     var dayDiv = document.getElementById(`day-${dayNumber}`).children
-
                     dayDiv[0].innerHTML = `${dailyWeatherFormmated.date}`
                     dayDiv[1].src = dailyWeatherFormmated.iconurl
                     dayDiv[2].innerHTML = `${dailyWeatherFormmated.temp}`
                     dayDiv[3].innerHTML = `${dailyWeatherFormmated.wind}`
                     dayDiv[4].innerHTML = `${dailyWeatherFormmated.humidity}`
-
                     dayNumber++
 
                 }
@@ -106,16 +90,15 @@ document.getElementById("searchBtn").addEventListener("click", function (event) 
     event.preventDefault();
     var userCityInput = document.getElementById("UserInput").value
     var location = searchApi(userCityInput)
-    localStorage.setItem("UserInput", JSON.stringify(userInput));
-    // console.log(location)
 })
 
 function GettingStorage() {
-    for (let i = 0; i < userInput.length; i++) {
-        var TextId = userInput[i]; 
-    var locations = JSON.parse(localStorage.getItem(userInput));
-    document.getElementById(savedcities).innerHTML = locations;
+    var locations = JSON.parse(localStorage.getItem("userInput"));
+    if (Array.isArray(locations) == false) {
+    localStorage.setItem("userInput", JSON.stringify([]));
     }
-}
+    return locations
+    }
+
 
 GettingStorage();
