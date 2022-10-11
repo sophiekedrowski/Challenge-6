@@ -8,7 +8,7 @@ link:
 https://sophiekedrowski.github.io/Challenge-6/
 
 screenshot:
-<img src="images/images/Screen Shot 2022-10-11 at 6.32.23 PM.png">
+<img src="images/Screen Shot 2022-10-11 at 6.32.23 PM.png">
 
 
 ## Installation
