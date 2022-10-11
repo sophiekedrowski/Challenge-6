@@ -8,47 +8,96 @@
 // WHEN I click on a city in the search history
 // THEN I am again presented with current and future conditions for that city
 
+// var oneCallURL = "https://api.openweathermap.org/data/3.0/onecall?"
+// var exclueItems = "minutely,hourly,alerts"
+
 var weatherAPIkey = "b3a90c7d3eb0ba55e470bab86bc63863";
 
-function forecast(lat, lon) {
+function forecast(lat, lon, userInput) {
     var forecastUrl =
         (`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${weatherAPIkey}`);
+
+    // (`${oneCallURL}lat=${lat}&lon=${lon}&exclude=${exclueItems}&appid=${weatherAPIkey}`)
     fetch(forecastUrl)
         .then((res) => res.json())
         .then((res) => {
-            console.log(res);
-            console.log(res.list.slice(0, 5));
+            // console.log(res);
+            // console.log(res.list.slice(0, 5));
+            //Make error if user types not a real city
+            // console.log(forecastUrl)
+            // console.log(forecastUrl)
+            function getWeather(day) {
+                //Getting the date and converting from UNIX timestamp into correct format
+                var unformattedDate = res.list[day].dt
 
-            //Getting the date and converting from UNIX timestamp into correct format
-            var unformattedDate = res.list[0].dt
-            var date = new Date(unformattedDate * 1000);
-            var formattedDate = moment(date).format("DD/MM/YYYY");
-
-            //wind and humidity values
-            var wind = res.list[0].wind.speed + (" MPH")
-            var humidity = res.list[0].main.humidity + (" %")
-
-            //Converting the temp from K to F
-            var temp = res.list[0].main.temp
-            var actualTemp = (temp - 273.15) * 9 / 5 + 32
-            var trueTemp = Math.round(actualTemp) + (" F°")
-
-            //icon
-            var icon = res.list[0].weather[0].icon
-            var iconurl = `http://openweathermap.org/img/w/${icon}.png`
-
-            //Creating an array with all my variables
-            var todaysWeather = [wind, humidity, trueTemp, icon, formattedDate]
+                var date = new Date(unformattedDate * 1000);
+                // console.log(res.list[day].dt_txt)
+                var formattedDate = moment(date).format("MM/DD/YYYY");
 
 
-            //For loops to go through my 5 day forecast
-            for (let i = 0; i < todaysWeather.length; i++) {
-                const accurateDisplayedWeather = todaysWeather[i];
-                console.log(accurateDisplayedWeather)
+                //wind and humidity values
+                var wind = ("Wind:") + res.list[day].wind.speed + (" MPH")
+                var humidity = ("Humiditiy:") + res.list[day].main.humidity + ("%")
+
+                //Converting the temp from K to F
+                var temp = res.list[day].main.temp
+                var actualTemp = (temp - 273.15) * 9 / 5 + 32
+                var trueTemp = ("Temp:") + Math.round(actualTemp) + (" F°")
+
+                //icon
+                var icon = res.list[day].weather[0].icon
+                var iconurl = `http://openweathermap.org/img/w/${icon}.png`
+
+                var city = res.city.name
+
+                //Creating an array with all my variables
+                return {city:city, date:formattedDate, iconurl:iconurl, temp:trueTemp, wind:wind, humidity:humidity};
+            }
+
+            var currentWeather = getWeather(0);
+
+
+            document.getElementById("city-date").innerHTML = `${currentWeather.city} (${currentWeather.date})`
+            document.getElementById("temp").innerHTML = `${currentWeather.temp}`
+            document.getElementById("wind").innerHTML = `${currentWeather.wind}`
+            document.getElementById("humidity").innerHTML = `${currentWeather.humidity}`
+            document.getElementById("current-icon").src = `${currentWeather.iconurl}`
+
+
+
+            // console.log(currentWeather[0]);
+
+            //    console.log(currentWeather)
+
+            // For loops to go through my 5 day forecast
+            var dayNumber = 1
+
+            for (let i = 0; i < res.list.length; i++) {
+                // const accurateDisplayedWeather = todaysWeather[i];
+                // console.log(getWeather(i))
+
+                var dailyWeatherFormmated = getWeather(i);
+
+                if (res.list[i].dt_txt.endsWith("9:00:00")) {
+                    
+                    var dayDiv = document.getElementById(`day-${dayNumber}`).children
+
+                    dayDiv[0].innerHTML = `${dailyWeatherFormmated.date}`
+                    dayDiv[1].src  = dailyWeatherFormmated.iconurl
+                    dayDiv[2].innerHTML = `${dailyWeatherFormmated.temp}`
+                    dayDiv[3].innerHTML = `${dailyWeatherFormmated.wind}`
+                    dayDiv[4].innerHTML = `${dailyWeatherFormmated.humidity}`
+
+                    dayNumber++
+
+                }
+
             }
 
         });
 }
+
+
 
 
 function searchApi(userInput) {
@@ -60,7 +109,7 @@ function searchApi(userInput) {
             var lon = res[0].lon;
             var lat = res[0].lat;
             console.log("lat: " + lat, "Lon: " + lon);
-            forecast(lat, lon);
+            forecast(lat, lon, userInput);
             return lat, lon;
         });
 }
@@ -71,3 +120,7 @@ document.getElementById("searchBtn").addEventListener("click", function () {
     var location = searchApi(userCityInput)
     console.log(location)
 })
+
+// function savingCityData(){
+
+// }
