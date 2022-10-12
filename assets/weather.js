@@ -48,6 +48,7 @@ function forecast(lat, lon, userInput) {
             document.getElementById("humidity").innerHTML = `${currentWeather.humidity}`
             document.getElementById("current-icon").src = `${currentWeather.iconurl}`
 
+            setSavedSearches(currentWeather.city)
             // For loops to go through my 5 day forecast
             var dayNumber = 1
             for (let i = 0; i < res.list.length; i++) {
@@ -90,15 +91,39 @@ document.getElementById("searchBtn").addEventListener("click", function (event) 
     event.preventDefault();
     var userCityInput = document.getElementById("UserInput").value
     var location = searchApi(userCityInput)
+    getSavedSearches();
+
 })
-
-function GettingStorage() {
-    var locations = JSON.parse(localStorage.getItem("userInput"));
-    if (Array.isArray(locations) == false) {
-    localStorage.setItem("userInput", JSON.stringify([]));
+function setSavedSearches(city) {
+    var savedSearches = JSON.parse(localStorage.getItem("savedSearches"))
+    if (!Array.isArray(savedSearches)) {
+        localStorage.setItem("savedSearches", JSON.stringify([]));
+        savedSearches = []
     }
-    return locations
+    savedSearches.push(city)
+    var savedUniqueSearches = [...new Set(savedSearches)]
+    localStorage.setItem("savedSearches", JSON.stringify(savedUniqueSearches))
+
+}
+
+function getSavedSearches() {
+    var savedSearches = JSON.parse(localStorage.getItem("savedSearches"))
+
+    if (!Array.isArray(savedSearches)) {
+        return null
     }
+    var savedSearchBtnDiv = document.getElementById("savedcities")
+    savedSearchBtnDiv.innerHTML = ""
+    savedSearches.forEach(savedSearch => {
+        var savedSearchBtn = savedSearchBtnDiv.appendChild(document.createElement("button"))
+        savedSearchBtn.innerHTML = savedSearch
+        savedSearchBtn.addEventListener("click", function () {
+            var location = searchApi(savedSearch)
+            document.getElementById("UserInput").value = savedSearch
+
+        })
+    });
+}
 
 
-GettingStorage();
+getSavedSearches();
